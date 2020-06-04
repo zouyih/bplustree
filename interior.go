@@ -35,9 +35,14 @@ type interiorNode struct {
 }
 
 func newInteriorNode(p *interiorNode, largestChild node) *interiorNode {
+	count := 0
+	if largestChild != nil {
+		count = 1
+	}
+
 	i := &interiorNode{
 		p:     p,
-		count: 1,
+		count: count,
 	}
 
 	if largestChild != nil {
@@ -89,7 +94,6 @@ func (in *interiorNode) split() (*interiorNode, int) {
 
 	// get the mid info
 	midIndex := MaxKC / 2
-	midChild := in.kcs[midIndex].child
 	midKey := in.kcs[midIndex].key
 
 	// create the split node with out a parent
@@ -103,9 +107,10 @@ func (in *interiorNode) split() (*interiorNode, int) {
 
 	// modify the original node
 	in.count = midIndex + 1
-	in.kcs[in.count-1].key = 0
-	in.kcs[in.count-1].child = midChild
-	midChild.setParent(in)
+	for i := in.count; i <= MaxKC; i++ {
+		in.kcs[i].key = 0
+		in.kcs[i].child = nil
+	}
 
 	return next, midKey
 }

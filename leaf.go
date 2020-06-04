@@ -1,7 +1,6 @@
 package bplustree
 
 import (
-	//"log"
 	"sort"
 )
 
@@ -80,12 +79,16 @@ func (l *leafNode) insert(key int, value string) (int, bool) {
 func (l *leafNode) split() *leafNode {
 	next := newLeafNode(nil)
 
-	copy(next.kvs[0:], l.kvs[l.count/2+1:])
+	copy(next.kvs[0:], l.kvs[l.count/2:])
 
-	next.count = MaxKV - l.count/2 - 1
+	next.count = MaxKV - l.count/2
 	next.next = l.next
 
-	l.count = l.count/2 + 1
+	l.count = l.count / 2
+	for i := l.count; i < MaxKV; i++ {
+		l.kvs[i].key = 0
+		l.kvs[i].value = ""
+	}
 	l.next = next
 
 	return next

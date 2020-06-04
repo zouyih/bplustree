@@ -1,29 +1,31 @@
 package bplustree
 
+import "fmt"
+
 type BTree struct {
-	root     *interiorNode
-	first    *leafNode
-	leaf     int
-	interior int
-	height   int
+	root   *interiorNode
+	first  *leafNode
+	height int
 }
 
-func newBTree() *BTree {
+func NewBTree() *BTree {
 	leaf := newLeafNode(nil)
 	r := newInteriorNode(nil, leaf)
 	leaf.p = r
 	return &BTree{
-		root:     r,
-		first:    leaf,
-		leaf:     1,
-		interior: 1,
-		height:   2,
+		root:   r,
+		first:  leaf,
+		height: 2,
 	}
 }
 
 // first returns the first leafNode
 func (bt *BTree) First() *leafNode {
 	return bt.first
+}
+
+func (bt *BTree) Height() int {
+	return bt.height
 }
 
 // insert inserts a (key, value) into the B+ tree
@@ -69,10 +71,11 @@ func (bt *BTree) Insert(key int, value string) {
 			newNode.setParent(bt.root)
 
 			bt.root.insert(mid, interior)
+			bt.height++
 			return
 		}
 
-		interior, interiorP = interiorP, interior.parent()
+		interior, interiorP = interiorP, interiorP.parent()
 	}
 }
 
@@ -85,6 +88,21 @@ func (bt *BTree) Search(key int) (string, bool) {
 		return "", false
 	}
 	return kv.value, true
+}
+
+func (bt *BTree) Scan() []string {
+	res := make([]string, 0)
+
+	leaf := bt.First()
+	for leaf != nil {
+		for i := 0; i < leaf.count; i++ {
+			kv := leaf.kvs[i]
+			res = append(res, kv.value)
+		}
+		leaf = leaf.next
+	}
+
+	return res
 }
 
 func search(n node, key int) (*kv, int, *leafNode) {
@@ -107,4 +125,33 @@ func search(n node, key int) (*kv, int, *leafNode) {
 			panic("")
 		}
 	}
+}
+
+func (bt *BTree) Print() {
+
+	queue := []node{bt.root}
+
+	for len(queue) > 0 {
+		num := len(queue)
+		for i := 0; i < num; i++ {
+			curr := queue[0]
+			queue = queue[1:]
+			switch t := curr.(type) {
+			case *interiorNode:
+				for _, nodeKc := range t.kcs {
+					fmt.Printf("k: %d ", nodeKc.key)
+					queue = append(queue, nodeKc.child)
+				}
+				fmt.Printf(" | ")
+			case *leafNode:
+				for _, nodeKv := range t.kvs {
+					fmt.Printf("lk: %d ", nodeKv.key)
+				}
+				fmt.Printf(" | ")
+			}
+		}
+		fmt.Println("")
+
+	}
+
 }

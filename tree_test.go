@@ -8,7 +8,7 @@ import (
 
 func TestInsert(t *testing.T) {
 	testCount := 1000000
-	bt := newBTree()
+	bt := NewBTree()
 
 	start := time.Now()
 	for i := testCount; i > 0; i-- {
@@ -21,7 +21,7 @@ func TestInsert(t *testing.T) {
 
 func TestSearch(t *testing.T) {
 	testCount := 1000000
-	bt := newBTree()
+	bt := NewBTree()
 
 	for i := testCount; i > 0; i-- {
 		bt.Insert(i, fmt.Sprintf("%d", i))
@@ -95,7 +95,7 @@ func verifyNode(n node, parent *interiorNode, t *testing.T) {
 			}
 			last = key
 
-			if i == nn.count-1 && key != 0 {
+			if i == MaxKC-1 && key != 0 {
 				t.Errorf("interior.last.key: want = 0, got = %d", key)
 			}
 
