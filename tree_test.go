@@ -2,6 +2,8 @@ package bplustree
 
 import (
 	"fmt"
+	"math/rand"
+	"sort"
 	"testing"
 	"time"
 )
@@ -35,6 +37,26 @@ func TestSearch(t *testing.T) {
 		}
 		if v != fmt.Sprintf("%d", i) {
 			t.Errorf("search: want = %d, got = %s", i, v)
+		}
+	}
+	fmt.Println(time.Now().Sub(start))
+}
+
+func TestScan(t *testing.T) {
+	testCount := 1000000
+	bt := NewBTree()
+
+	values := rand.Perm(testCount)
+	for _, i := range values {
+		bt.Insert(i, fmt.Sprintf("%d", i))
+	}
+	sort.Ints(values)
+
+	start := time.Now()
+	scanValues := bt.Scan()
+	for i, value := range values {
+		if scanValues[i] != fmt.Sprintf("%d", value) {
+			t.Errorf("scan: want = %d, got = %s", value, scanValues[i])
 		}
 	}
 	fmt.Println(time.Now().Sub(start))
